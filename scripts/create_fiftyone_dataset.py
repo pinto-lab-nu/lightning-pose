@@ -13,7 +13,7 @@ from lightning_pose.utils.fiftyone import (
 )
 
 
-@hydra.main(config_path="configs", config_name="config_mirror-mouse-example")
+@hydra.main(config_path="/root/Desktop/Eyetracking-LightningPose-2023-09-25", config_name="config_pupil")
 def build_fo_dataset(cfg: DictConfig) -> None:
     pretty_print_str(
         "Launching a job that creates %s FiftyOne.Dataset"

@@ -87,7 +87,7 @@ class VideoPredPathHandler:
         return os.path.join(self.save_preds_dir, pred_file_basename)
 
 
-@hydra.main(config_path="configs", config_name="config_mirror-mouse-example")
+@hydra.main(config_path="/root/Desktop/Eyetracking-LightningPose-2023-09-25", config_name="config_pupil")
 def predict_videos_in_dir(cfg: DictConfig):
     """
     This script will work with a path to a trained model's hydra folder
@@ -106,7 +106,7 @@ def predict_videos_in_dir(cfg: DictConfig):
 
     # get pl trainer for prediction
     gpus = get_gpu_list_from_cfg(cfg)
-    trainer = pl.Trainer(gpus=gpus)
+    trainer = pl.Trainer(accelerator="auto")
 
     # loop over models
     for i, hydra_relative_path in enumerate(cfg.eval.hydra_paths):

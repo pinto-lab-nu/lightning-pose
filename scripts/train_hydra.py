@@ -26,7 +26,7 @@ from lightning_pose.utils.scripts import (
 )
 
 
-@hydra.main(config_path="configs", config_name="config_mirror-mouse-example")
+@hydra.main(config_path="/root/Desktop/Eyetracking-LightningPose-2023-09-25", config_name="config_pupil")
 def train(cfg: DictConfig):
     """Main fitting function, accessed from command line."""
 
