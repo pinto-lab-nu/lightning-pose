@@ -4,6 +4,7 @@
 #SBATCH --job-name=trainingLPModel_OperantScope
 #SBATCH --mem=50GB 
 #SBATCH --ntasks=4
+#SBATCH --nodelist=FSM2JSX7Y3
 
 
 source ~/miniconda3/etc/profile.d/conda.sh
