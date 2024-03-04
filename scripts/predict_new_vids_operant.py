@@ -141,7 +141,7 @@ def predict_videos_in_dir(cfg: DictConfig):
             save_preds_dir = return_absolute_path(cfg.eval.saved_vid_preds_dir, n_dirs_back=3)
 
         # loop over videos in a provided directory
-        video_files = get_videos_in_dir(return_absolute_path(cfg.eval.test_videos_directory), return_mp4_only = False)
+        video_files = get_videos_in_dir(return_absolute_path(cfg.eval.test_videos_directory), return_mp4_only = True)
 
         for video_file in video_files:
 
