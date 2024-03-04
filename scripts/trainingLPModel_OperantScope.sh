@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --time=0-06:30:00 
+#SBATCH --time=0-05:00:00 
 #SBATCH --job-name=trainingLPModel_OperantScope
 #SBATCH --mem=50GB 
 #SBATCH --ntasks=4
