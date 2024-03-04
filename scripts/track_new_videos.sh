@@ -11,4 +11,4 @@ source ~/miniconda3/etc/profile.d/conda.sh
 
 conda activate pose_estimation 
 
-python /home/nfh2911/Documents/Experiments_Operant/lightning-pose/scripts/predict_new_vids.py --config-path="/home/nfh2911/Documents/Experiments_Operant/OperantScope_LP" --config-name="config_default.yaml" eval.hydra_paths=["2024-03-04/12-57-49"] eval.test_videos_directory="/mnt/fsmresfiles/Operant_Data/videos/lightning_pose/" eval.saved_vid_preds_dir="/mnt/fsmresfiles/Operant_Data/videos/lightning_pose/preds/" eval.save_vids_after_training=true
+python /home/nfh2911/Documents/Experiments_Operant/lightning-pose/scripts/predict_new_vids_operant.py --config-path="/home/nfh2911/Documents/Experiments_Operant/OperantScope_LP" --config-name="config_default.yaml" eval.hydra_paths=["2024-03-04/12-57-49"] eval.test_videos_directory="/mnt/fsmresfiles/Operant_Data/videos/lightning_pose/" eval.saved_vid_preds_dir="/mnt/fsmresfiles/Operant_Data/videos/lightning_pose/preds/" eval.save_vids_after_training=true
