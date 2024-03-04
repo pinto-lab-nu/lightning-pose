@@ -3,7 +3,7 @@
 #SBATCH --time=0-06:30:00 
 #SBATCH --job-name=trainingLPModel_OperantScope
 #SBATCH --mem=50GB 
-#SBATCH --ntasks=1
+#SBATCH --ntasks=4
 
 
 source ~/miniconda3/etc/profile.d/conda.sh
