@@ -2,7 +2,7 @@
 
 basename = "mnt/fsmresfiles/Operant_Data/imaging/DMS_imaging"
 
-recs="mnt/fsmresfiles/Operant_Data/imaging/DMS_imaging/IM7/2024_02_09/15_05_50/My_WebCam
+recs="/mnt/fsmresfiles/Operant_Data/imaging/DMS_imaging/IM7/2024_02_09/15_05_50/My_WebCam
 "
 
 for recname in $recs
