@@ -4,7 +4,7 @@ import argparse
 
 
 def convert_behav_video(pathname: str):
-	
+	print(pathname)
 	fnames = os.listdir(pathname);
 	
 	if not 'behavVideo_concat.mp4' in fnames: 
