@@ -11,7 +11,7 @@
 #SBATCH -e /mnt/fsmresfiles/Operant_Data/videos/lightning_pose/logs/%N.%j.err       # STDERR
 #SBATCH --array=57%10
 
-config=/mnt/fsmresfiles/videos/lightning_pose/videosToTrack.txt
+config=/mnt/fsmresfiles/Operant_Data/videos/lightning_pose/videosToTrack.txt
 IFS=$'\n' read -d '' -r -a fname < $config
 
 
