@@ -5,14 +5,20 @@
 #SBATCH --job-name=track_new_videos
 #SBATCH --mem=10GB
 #SBATCH --ntasks=1
-#SBATCH --nodelist=FSM2JSX7Y3
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=julia.cox@northwestern.edu
+#SBATCH -o /mnt/fsmresfiles/videos/lightning_pose/logs/%N.%j.out       # STDOUT
+#SBATCH -e /mnt/fsmresfiles/videos/lightning_pose/logs/%N.%j.err       # STDERR
+#SBATCH --array=57%10
+
+config=/mnt/fsmresfiles/videos/lightning_pose/videosToTrack.txt
+IFS=$'\n' read -d '' -r -a fname < $config
+
 
 source ~/miniconda3/etc/profile.d/conda.sh
 
 conda activate pose_estimation 
 
-python /home/nfh2911/Documents/Experiments_Operant/lightning-pose/scripts/convert_behav_video.py "$1"
+python /home/nfh2911/Documents/Experiments_Operant/lightning-pose/scripts/convert_behav_video.py "$fname[$SLURM_ARRAY_TASK_ID]"
 
-python /home/nfh2911/Documents/Experiments_Operant/lightning-pose/scripts/predict_new_vids.py --config-path="/home/nfh2911/Documents/Experiments_Operant/OperantScope_LP" --config-name="config_default.yaml" eval.hydra_paths=["/mnt/fsmresfiles/Operant_Data/videos/lightning_pose/outputs/2024-03-04/12-57-49"] eval.test_videos_directory="$1" eval.saved_vid_preds_dir="$1" eval.save_vids_after_training=true
+python /home/nfh2911/Documents/Experiments_Operant/lightning-pose/scripts/predict_new_vids.py --config-path="/home/nfh2911/Documents/Experiments_Operant/OperantScope_LP" --config-name="config_default.yaml" eval.hydra_paths=["/mnt/fsmresfiles/Operant_Data/videos/lightning_pose/outputs/2024-03-04/12-57-49"] eval.test_videos_directory="$fname[$SLURM_ARRAY_TASK_ID]" eval.saved_vid_preds_dir="$fname[$SLURM_ARRAY_TASK_ID]" eval.save_vids_after_training=false
