@@ -7,8 +7,8 @@
 #SBATCH --ntasks=1
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=julia.cox@northwestern.edu
-#SBATCH -o /mnt/fsmresfiles/videos/lightning_pose/logs/%N.%j.out       # STDOUT
-#SBATCH -e /mnt/fsmresfiles/videos/lightning_pose/logs/%N.%j.err       # STDERR
+#SBATCH -o /mnt/fsmresfiles/Operant_Data/videos/lightning_pose/logs/%N.%j.out       # STDOUT
+#SBATCH -e /mnt/fsmresfiles/Operant_Data/videos/lightning_pose/logs/%N.%j.err       # STDERR
 #SBATCH --array=57%10
 
 config=/mnt/fsmresfiles/videos/lightning_pose/videosToTrack.txt
