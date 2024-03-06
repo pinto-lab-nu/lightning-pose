@@ -3,13 +3,13 @@
 #SBATCH --nodes=1
 #SBATCH --time=0-02:00:00
 #SBATCH --job-name=track_new_videos
-#SBATCH --mem=10GB
+#SBATCH --mem=40GB
 #SBATCH --ntasks=1
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=julia.cox@northwestern.edu
 #SBATCH -o /mnt/fsmresfiles/Operant_Data/videos/lightning_pose/logs/%N.%j.out       # STDOUT
 #SBATCH -e /mnt/fsmresfiles/Operant_Data/videos/lightning_pose/logs/%N.%j.err       # STDERR
-#SBATCH --array=1-56%20
+#SBATCH --array=0-23%20
 
 fname=($(</mnt/fsmresfiles/Operant_Data/videos/lightning_pose/videosToTrack.txt))
 
