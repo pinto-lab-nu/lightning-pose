@@ -9,7 +9,7 @@
 #SBATCH --mail-user=julia.cox@northwestern.edu
 #SBATCH -o /mnt/fsmresfiles/Operant_Data/videos/lightning_pose/logs/%N.%j.out       # STDOUT
 #SBATCH -e /mnt/fsmresfiles/Operant_Data/videos/lightning_pose/logs/%N.%j.err       # STDERR
-#SBATCH --array=0%10
+#SBATCH --array=1-56%20
 
 fname=($(</mnt/fsmresfiles/Operant_Data/videos/lightning_pose/videosToTrack.txt))
 
