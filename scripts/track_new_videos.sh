@@ -15,4 +15,4 @@ conda activate pose_estimation
 
 python /home/nfh2911/Documents/Experiments_Operant/lightning-pose/scripts/convert_behav_video.py "$1"
 
-python /home/nfh2911/Documents/Experiments_Operant/lightning-pose/scripts/predict_new_vids.py --config-path="/home/nfh2911/Documents/Experiments_Operant/OperantScope_LP" --config-name="config_default.yaml" eval.hydra_paths = ['/mnt/fsmresfiles/Operant_Data/videos/lightning_pose/outputs/2024-03-04/12-57-49'] eval.test_videos_directory="$1" eval.saved_vid_preds_dir="$1" eval.save_vids_after_training=true
+python /home/nfh2911/Documents/Experiments_Operant/lightning-pose/scripts/predict_new_vids.py --config-path="/home/nfh2911/Documents/Experiments_Operant/OperantScope_LP" --config-name="config_default.yaml" eval.hydra_paths=["/mnt/fsmresfiles/Operant_Data/videos/lightning_pose/outputs/2024-03-04/12-57-49"] eval.test_videos_directory="$1" eval.saved_vid_preds_dir="$1" eval.save_vids_after_training=true
