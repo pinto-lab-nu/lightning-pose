@@ -4,7 +4,7 @@
 #SBATCH --time=0-02:00:00
 #SBATCH --job-name=track_new_videos
 #SBATCH --mem=60GB
-#SBATCH --ntasks=2
+#SBATCH --ntasks-per-node=2
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=julia.cox@northwestern.edu
 #SBATCH -o /mnt/fsmresfiles/Operant_Data/videos/lightning_pose/logs/%N.%j.out       # STDOUT
