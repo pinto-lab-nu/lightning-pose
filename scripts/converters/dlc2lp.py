@@ -73,14 +73,16 @@ df_all.to_csv(os.path.join(lp_dir, "CollectedData.csv"))
 # copy frames over
 src = os.path.join(dlc_dir, "labeled-data")
 dst = os.path.join(lp_dir, "labeled-data")
-shutil.copytree(src, dst)
+# shutil.copytree(src, dst)
+os.system('scp -r {} {}'.format(src, dst))
 
 # copy videos over
 src = os.path.join(dlc_dir, "videos")
 dst = os.path.join(lp_dir, "videos")
 if os.path.exists(src):
     print("copying video files")
-    shutil.copytree(src, dst)
+    # shutil.copytree(src, dst)
+    os.system('scp -r {} {}'.format(src, dst))
 else:
     print("DLC video directory does not exist; creating empty video directory")
     os.makedirs(dst, exist_ok=True)
@@ -88,3 +90,4 @@ else:
 # check
 for im in df_all.index:
     assert os.path.exists(os.path.join(lp_dir, im))
+

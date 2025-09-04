@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip
 from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import LightningModule
 from torchtyping import TensorType

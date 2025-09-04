@@ -9,7 +9,7 @@ import imgaug.augmenters as iaa
 import lightning.pytorch as pl
 import numpy as np
 import pandas as pd
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip
 from omegaconf import DictConfig, OmegaConf
 import torch
 from typeguard import typechecked
