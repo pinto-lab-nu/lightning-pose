@@ -5,7 +5,7 @@ import os
 import hydra
 import lightning.pytorch as pl
 import numpy as np
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip
 from omegaconf import DictConfig, OmegaConf
 from typeguard import typechecked
 
@@ -87,7 +87,10 @@ class VideoPredPathHandler:
         return os.path.join(self.save_preds_dir, pred_file_basename)
 
 
-@hydra.main(config_path="/root/Desktop/Eyetracking-LightningPose-2023-09-25", config_name="config_pupil")
+@hydra.main(
+    config_path="/root/Desktop/Eyetracking-LightningPose-2023-09-25",
+    config_name="config_pupil",
+)
 def predict_videos_in_dir(cfg: DictConfig):
     """
     This script will work with a path to a trained model's hydra folder
@@ -118,7 +121,9 @@ def predict_videos_in_dir(cfg: DictConfig):
         absolute_cfg_path = return_absolute_path(hydra_relative_path, n_dirs_back=2)
 
         # load model
-        model_cfg = OmegaConf.load(os.path.join(absolute_cfg_path, ".hydra/config.yaml"))
+        model_cfg = OmegaConf.load(
+            os.path.join(absolute_cfg_path, ".hydra/config.yaml")
+        )
         ckpt_file = ckpt_path_from_base_path(
             base_path=absolute_cfg_path, model_name=model_cfg.model.model_name
         )
@@ -129,7 +134,9 @@ def predict_videos_in_dir(cfg: DictConfig):
         print("getting imgaug transform...")
         imgaug_transform = get_imgaug_transform(cfg=cfg)
         print("getting dataset...")
-        dataset = get_dataset(cfg=cfg, data_dir=data_dir, imgaug_transform=imgaug_transform)
+        dataset = get_dataset(
+            cfg=cfg, data_dir=data_dir, imgaug_transform=imgaug_transform
+        )
         print("getting data module...")
         data_module = get_data_module(cfg=cfg, dataset=dataset, video_dir=video_dir)
 
@@ -138,10 +145,14 @@ def predict_videos_in_dir(cfg: DictConfig):
             # save to where the videos are. may get an exception
             save_preds_dir = cfg.eval.test_videos_directory
         else:
-            save_preds_dir = return_absolute_path(cfg.eval.saved_vid_preds_dir, n_dirs_back=3)
+            save_preds_dir = return_absolute_path(
+                cfg.eval.saved_vid_preds_dir, n_dirs_back=3
+            )
 
         # loop over videos in a provided directory
-        video_files = get_videos_in_dir(return_absolute_path(cfg.eval.test_videos_directory))
+        video_files = get_videos_in_dir(
+            return_absolute_path(cfg.eval.test_videos_directory)
+        )
 
         for video_file in video_files:
 
