@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
-from moviepy import VideoFileClip
+from moviepy.editor import VideoFileClip
 from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import LightningModule
 from torchtyping import TensorType
@@ -60,12 +60,17 @@ class PredictionHandler:
         # check args: data_module is optional under certain conditions
         if data_module is None:
             if video_file is None:
-                raise ValueError("must pass data_module to constructor if predicting on a dataset")
-            if cfg.data.get("keypoint_names", None) is None \
-                    and cfg.data.get("keypoints", None) is None:
+                raise ValueError(
+                    "must pass data_module to constructor if predicting on a dataset"
+                )
+            if (
+                cfg.data.get("keypoint_names", None) is None
+                and cfg.data.get("keypoints", None) is None
+            ):
                 raise ValueError(
                     "must include `keypoint_names` or `keypoints` field in cfg.data if not "
-                    "passing data_module as an argument to PredictionHandler")
+                    "passing data_module as an argument to PredictionHandler"
+                )
 
         self.cfg = cfg
         self.data_module = data_module
@@ -157,7 +162,9 @@ class PredictionHandler:
         of images[-2] and images[-3]
         """
         # first pad the first two rows for which we have no valid preds.
-        preds_1 = torch.tile(stacked_preds[0], (2, 1))  # copying twice the prediction for image[2]
+        preds_1 = torch.tile(
+            stacked_preds[0], (2, 1)
+        )  # copying twice the prediction for image[2]
         preds_2 = stacked_preds[0:-2]  # throw out the last two rows.
         preds_combined = torch.vstack([preds_1, preds_2])
         # repat the last one twice
@@ -194,7 +201,9 @@ class PredictionHandler:
             np.ndarray: cols are (bp0_x, bp0_y, bp0_likelihood, bp1_x, bp1_y, ...)
 
         """
-        assert keypoints_np.shape[0] == confidence_np.shape[0]  # num frames in the dataset
+        assert (
+            keypoints_np.shape[0] == confidence_np.shape[0]
+        )  # num frames in the dataset
         assert keypoints_np.shape[1] == (
             confidence_np.shape[1] * 2
         )  # we have two (x,y) coordinates and a single likelihood value
@@ -289,7 +298,10 @@ def predict_dataset(
 
     if model is None:
         model = load_model_from_checkpoint(
-            cfg=cfg, ckpt_file=ckpt_file, eval=True, data_module=data_module,
+            cfg=cfg,
+            ckpt_file=ckpt_file,
+            eval=True,
+            data_module=data_module,
         )
 
     if trainer is None:
@@ -366,13 +378,18 @@ def predict_single_video(
         model_type=model_type,
         dali_config=cfg.dali,
         filenames=[video_file],
-        resize_dims=[cfg.data.image_resize_dims.height, cfg.data.image_resize_dims.width]
+        resize_dims=[
+            cfg.data.image_resize_dims.height,
+            cfg.data.image_resize_dims.width,
+        ],
     )
     # get loader
     predict_loader = vid_pred_class()
 
     # initialize prediction handler class
-    pred_handler = PredictionHandler(cfg=cfg, data_module=data_module, video_file=video_file)
+    pred_handler = PredictionHandler(
+        cfg=cfg, data_module=data_module, video_file=video_file
+    )
 
     # ----------------------------------------------------------------------------------
     # compute predictions
@@ -455,12 +472,14 @@ def _predict_frames(
     confidence_np = np.zeros((n_frames, model.num_keypoints))
 
     if return_heatmaps:
-        heatmaps_np = np.zeros((
-            n_frames,
-            model.num_keypoints,
-            model.output_shape[0],  # // (2 ** model.downsample_factor),
-            model.output_shape[1],  # // (2 ** model.downsample_factor)
-        ))
+        heatmaps_np = np.zeros(
+            (
+                n_frames,
+                model.num_keypoints,
+                model.output_shape[0],  # // (2 ** model.downsample_factor),
+                model.output_shape[1],  # // (2 ** model.downsample_factor)
+            )
+        )
     else:
         heatmaps_np = None
 
@@ -511,15 +530,23 @@ def _predict_frames(
                     heatmaps_np[n_frames_counter:] = pred_heatmaps[:final_batch_size]
                 n_frames_curr = final_batch_size
             else:  # at every sequence except the final
-                keypoints_np[n_frames_counter:n_frames_counter + n_frames_curr] = pred_keypoints
-                confidence_np[n_frames_counter:n_frames_counter + n_frames_curr] = confidence
+                keypoints_np[n_frames_counter : n_frames_counter + n_frames_curr] = (
+                    pred_keypoints
+                )
+                confidence_np[n_frames_counter : n_frames_counter + n_frames_curr] = (
+                    confidence
+                )
                 if return_heatmaps:
-                    heatmaps_np[n_frames_counter:n_frames_counter + n_frames_curr] = pred_heatmaps
+                    heatmaps_np[n_frames_counter : n_frames_counter + n_frames_curr] = (
+                        pred_heatmaps
+                    )
 
             n_frames_counter += n_frames_curr
 
     t_end = time.time()
-    pretty_print_str("inference speed: %1.2f fr/sec" % ((n * batch_size) / (t_end - t_beg)))
+    pretty_print_str(
+        "inference speed: %1.2f fr/sec" % ((n * batch_size) / (t_end - t_beg))
+    )
 
     # for regression networks, confidence_np will be all zeros, heatmaps_np will be None
     return keypoints_np, confidence_np, heatmaps_np
@@ -564,7 +591,9 @@ def get_model_class(map_type: str, semi_supervised: bool) -> Type[ALLOWED_MODELS
         elif map_type == "heatmap":
             from lightning_pose.models import SemiSupervisedHeatmapTracker as Model
         elif map_type == "heatmap_mhcrnn":
-            from lightning_pose.models import SemiSupervisedHeatmapTrackerMHCRNN as Model
+            from lightning_pose.models import (
+                SemiSupervisedHeatmapTrackerMHCRNN as Model,
+            )
         else:
             raise NotImplementedError(
                 f"{map_type} is an invalid model_type for a semi-supervised model"
@@ -598,7 +627,10 @@ def load_model_from_checkpoint(
         model as a Lightning Module
 
     """
-    from lightning_pose.utils.io import check_if_semi_supervised, return_absolute_data_paths
+    from lightning_pose.utils.io import (
+        check_if_semi_supervised,
+        return_absolute_data_paths,
+    )
     from lightning_pose.utils.scripts import (
         get_data_module,
         get_dataset,
@@ -613,7 +645,9 @@ def load_model_from_checkpoint(
         delete_extras = True
         data_dir, video_dir = return_absolute_data_paths(data_cfg=cfg.data)
         imgaug_transform = get_imgaug_transform(cfg=cfg)
-        dataset = get_dataset(cfg=cfg, data_dir=data_dir, imgaug_transform=imgaug_transform)
+        dataset = get_dataset(
+            cfg=cfg, data_dir=data_dir, imgaug_transform=imgaug_transform
+        )
         data_module = get_data_module(cfg=cfg, dataset=dataset, video_dir=video_dir)
     if not data_module:
         loss_factories = {"supervised": None, "unsupervised": None}
@@ -700,7 +734,9 @@ def create_labeled_video(
     dur = int(clip.duration - clip.start)
     fps_og = clip.fps
 
-    print(f"Duration of video [s]: {np.round(dur, 2)}, recorded at {np.round(fps_og, 2)} fps!")
+    print(
+        f"Duration of video [s]: {np.round(dur, 2)}, recorded at {np.round(fps_og, 2)} fps!"
+    )
 
     # add marker to each frame t, where t is in sec
     def add_marker(get_frame, t):
@@ -721,7 +757,7 @@ def create_labeled_video(
                     center=(xc, yc),
                     radius=dotsize,
                     color=colors[bpindex].tolist(),
-                    thickness=-1
+                    thickness=-1,
                 )
         return frame
 

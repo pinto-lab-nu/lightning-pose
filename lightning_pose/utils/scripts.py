@@ -9,7 +9,7 @@ import imgaug.augmenters as iaa
 import lightning.pytorch as pl
 import numpy as np
 import pandas as pd
-from moviepy import VideoFileClip
+from moviepy.editor import VideoFileClip
 from omegaconf import DictConfig, OmegaConf
 import torch
 from typeguard import typechecked
@@ -18,7 +18,10 @@ from lightning_pose.callbacks import AnnealWeight
 from lightning_pose.data.augmentations import imgaug_transform
 from lightning_pose.data.datamodules import BaseDataModule, UnlabeledDataModule
 from lightning_pose.data.datasets import BaseTrackingDataset, HeatmapDataset
-from lightning_pose.data.utils import compute_num_train_frames, split_sizes_from_probabilities
+from lightning_pose.data.utils import (
+    compute_num_train_frames,
+    split_sizes_from_probabilities,
+)
 from lightning_pose.losses.factory import LossFactory
 from lightning_pose.metrics import (
     pca_multiview_reprojection_error,
@@ -83,13 +86,17 @@ def get_dataset(
             imgaug_transform=imgaug_transform,
             downsample_factor=cfg.data.downsample_factor,
             do_context=cfg.model.model_type == "heatmap_mhcrnn" or cfg.model.do_context,
-            uniform_heatmaps=cfg.training.get("uniform_heatmaps_for_nan_keypoints", False),
+            uniform_heatmaps=cfg.training.get(
+                "uniform_heatmaps_for_nan_keypoints", False
+            ),
         )
     else:
         raise NotImplementedError(
             "%s is an invalid cfg.model.model_type" % cfg.model.model_type
         )
-    image = Image.open(os.path.join(dataset.root_directory, dataset.image_names[0])).convert("RGB")
+    image = Image.open(
+        os.path.join(dataset.root_directory, dataset.image_names[0])
+    ).convert("RGB")
     if image.size != (
         cfg.data.image_orig_dims.width,
         cfg.data.image_orig_dims.height,
@@ -191,8 +198,8 @@ def get_loss_factories(
                     "original_image_width"
                 ] = width_og
                 # record downsampled image dims
-                height_ds = int(height_og // (2 ** cfg.data.downsample_factor))
-                width_ds = int(width_og // (2 ** cfg.data.downsample_factor))
+                height_ds = int(height_og // (2**cfg.data.downsample_factor))
+                width_ds = int(width_og // (2**cfg.data.downsample_factor))
                 loss_params_dict["unsupervised"][loss_name][
                     "downsampled_image_height"
                 ] = height_ds
@@ -200,9 +207,9 @@ def get_loss_factories(
                     "downsampled_image_width"
                 ] = width_ds
                 if loss_name[:8] == "unimodal":
-                    loss_params_dict["unsupervised"][loss_name][
-                        "uniform_heatmaps"
-                    ] = cfg.training.get("uniform_heatmaps_for_nan_keypoints", False)
+                    loss_params_dict["unsupervised"][loss_name]["uniform_heatmaps"] = (
+                        cfg.training.get("uniform_heatmaps_for_nan_keypoints", False)
+                    )
             elif loss_name == "pca_multiview":
                 loss_params_dict["unsupervised"][loss_name][
                     "mirrored_column_matches"
@@ -241,7 +248,9 @@ def get_model(
     image_w = cfg.data.image_resize_dims.width
     if "vit" in cfg.model.backbone:
         if image_h != image_w:
-            raise RuntimeError("ViT model requires resized height and width to be equal")
+            raise RuntimeError(
+                "ViT model requires resized height and width to be equal"
+            )
 
     if not semi_supervised:
         if cfg.model.model_type == "regression":
@@ -339,6 +348,7 @@ def get_model(
         print(f"Loading weights from {ckpt}")
         if not ckpt.endswith(".ckpt"):
             import glob
+
             ckpt = glob.glob(os.path.join(ckpt, "**", "*.ckpt"), recursive=True)[0]
         state_dict = torch.load(ckpt)["state_dict"]
         # try loading all weights
@@ -401,7 +411,7 @@ def get_callbacks(
 @typechecked
 def calculate_train_batches(
     cfg: DictConfig,
-    dataset: Optional[Union[BaseTrackingDataset, HeatmapDataset]] = None
+    dataset: Optional[Union[BaseTrackingDataset, HeatmapDataset]] = None,
 ) -> int:
     """
     For semi-supervised models, this tells us how many batches to take from each dataloader
@@ -425,7 +435,9 @@ def calculate_train_batches(
         num_train_frames = compute_num_train_frames(
             data_splits_list[0], cfg.training.get("train_frames", None)
         )
-        num_labeled_batches = int(np.ceil(num_train_frames / cfg.training.train_batch_size))
+        num_labeled_batches = int(
+            np.ceil(num_train_frames / cfg.training.train_batch_size)
+        )
         limit_train_batches = np.max([num_labeled_batches, 10])  # 10 is minimum
     else:
         limit_train_batches = cfg.training.limit_train_batches
@@ -443,10 +455,12 @@ def compute_metrics(
 
     # get keypoint names
     labels_file = return_absolute_path(
-        os.path.join(cfg["data"]["data_dir"], cfg["data"]["csv_file"]))
+        os.path.join(cfg["data"]["data_dir"], cfg["data"]["csv_file"])
+    )
     labels_df = pd.read_csv(labels_file, header=[0, 1, 2], index_col=0)
     keypoint_names = get_keypoint_names(
-        cfg, csv_file=labels_file, header_rows=[0, 1, 2])
+        cfg, csv_file=labels_file, header_rows=[0, 1, 2]
+    )
 
     # load predictions
     pred_df = pd.read_csv(preds_file, header=[0, 1, 2], index_col=0)
@@ -519,8 +533,12 @@ def compute_metrics(
         # re-fit pca on the labeled data to get params
         pca()
         # compute reprojection error
-        pcasv_error_per_keypoint = pca_singleview_reprojection_error(keypoints_pred, pca, cfg)
-        pcasv_df = pd.DataFrame(pcasv_error_per_keypoint, index=index, columns=keypoint_names)
+        pcasv_error_per_keypoint = pca_singleview_reprojection_error(
+            keypoints_pred, pca, cfg
+        )
+        pcasv_df = pd.DataFrame(
+            pcasv_error_per_keypoint, index=index, columns=keypoint_names
+        )
         # add train/val/test split
         if set is not None:
             pcasv_df["set"] = set
@@ -539,8 +557,12 @@ def compute_metrics(
         # re-fit pca on the labeled data to get params
         pca()
         # compute reprojection error
-        pcamv_error_per_keypoint = pca_multiview_reprojection_error(keypoints_pred, pca, cfg)
-        pcamv_df = pd.DataFrame(pcamv_error_per_keypoint, index=index, columns=keypoint_names)
+        pcamv_error_per_keypoint = pca_multiview_reprojection_error(
+            keypoints_pred, pca, cfg
+        )
+        pcamv_df = pd.DataFrame(
+            pcamv_error_per_keypoint, index=index, columns=keypoint_names
+        )
         # add train/val/test split
         if set is not None:
             pcamv_df["set"] = set

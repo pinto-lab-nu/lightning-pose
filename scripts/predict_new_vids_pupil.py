@@ -5,7 +5,7 @@ import os
 import hydra
 import lightning.pytorch as pl
 import numpy as np
-from moviepy import VideoFileClip
+from moviepy.editor import VideoFileClip
 from omegaconf import DictConfig, OmegaConf
 from typeguard import typechecked
 
